@@ -88,3 +88,38 @@ Isso permitirá que a aplicação funcione sem a necessidade de uma chave da Ope
     ```
     http://localhost:8501
     ```
+
+## Conteinerização com Docker
+
+Para conteinerizar a aplicação, siga os passos abaixo:
+
+1. Crie as imagens Docker:
+    ```sh
+    docker build -t app-streamlit frontend/  # Cria a imagem do frontend
+    docker build -t app-fastapi backend/  # Cria a imagem do backend
+    ```
+
+2. Execute os contêineres:
+    ```sh
+    docker run -p 8501:8501 app-streamlit  # Frontend
+    docker run -p 8000:8000 app-fastapi  # Backend
+    ```
+
+## Orquestração com Docker Compose
+
+Para orquestrar a aplicação usando Docker Compose, siga os passos abaixo:
+
+1. Crie e inicie os serviços definidos no `docker-compose.yml`:
+    ```sh
+    docker-compose up --build
+    ```
+
+2. Acesse a aplicação no navegador através do endereço:
+    ```
+    http://localhost:8501
+    ```
+
+3. Acesse a documentação da API no navegador através do endereço:
+    ```
+    http://localhost:8000/docs
+    ```

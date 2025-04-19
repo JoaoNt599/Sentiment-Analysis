@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from backend.api_client import get_feedback_from_openai
+from api_client import get_feedback_from_openai
 
 
 app = FastAPI()

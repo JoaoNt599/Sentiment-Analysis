@@ -1,6 +1,6 @@
 import openai
 import json
-from backend.config import API_KEY, MOCK_OPENAPI_SERVICE
+from config import API_KEY, MOCK_OPENAPI_SERVICE
 
 openai.api_key = API_KEY
 
