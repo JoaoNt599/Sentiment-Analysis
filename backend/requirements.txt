@@ -11,6 +11,7 @@ certifi==2025.1.31
 charset-normalizer==3.4.1
 click==8.1.8
 colorama==0.4.6
+dnspython==2.7.0
 dotenv==0.9.9
 fastapi==0.115.12
 frozenlist==1.6.0
@@ -35,6 +36,7 @@ pyarrow==19.0.1
 pydantic==2.11.3
 pydantic_core==2.33.1
 pydeck==0.9.1
+pymongo==4.12.0
 python-dateutil==2.9.0.post0
 python-dotenv==1.1.0
 pytz==2025.2

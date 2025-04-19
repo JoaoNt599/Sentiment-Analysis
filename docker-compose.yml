@@ -5,6 +5,7 @@ services:
       dockerfile: Dockerfile
     environment:
       - PYTHONPATH=/app
+      - MONGO_URI=mongodb://mongodb:27017
     ports:
       - "8000:8000"
     networks:
@@ -14,14 +15,24 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    
     ports:
       - "8501:8501"
     networks:
       - app-network
     environment:
       - FASTAPI_HOST=fastapi
+      - MONGO_URI=mongodb://mongodb:27017
+  
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    networks:
+      - app-network
 
 networks:
   app-network:
     driver: bridge
+  
+  
