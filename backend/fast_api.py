@@ -1,0 +1,15 @@
+from fastapi import FastAPI
+from pydantic import BaseModel
+from backend.api_client import get_feedback_from_openai
+
+
+app = FastAPI()
+
+class Evaluation(BaseModel):
+    coment: str
+    rating: int 
+
+
+@app.post("/feedback/")
+async def feedback(evaluation: Evaluation):
+    return get_feedback_from_openai(evaluation.coment, evaluation.rating)
