@@ -130,14 +130,18 @@ Para orquestrar a aplicação usando Docker Compose, siga os passos abaixo:
 1. Crie e inicie os serviços definidos no `docker-compose.yml`:
     ```sh
     docker-compose up --build
+ 
     ```
-
-2. Acesse a aplicação no navegador através do endereço:
+2. Acesse a tela de login no navegador através do enderço:
+    ```
+    http://localhost:8502
+    ```
+3. Acesse a aplicação no navegador através do endereço:
     ```
     http://localhost:8501
     ```
 
-3. Acesse a documentação da API no navegador através do endereço:
+4. Acesse a documentação da API no navegador através do endereço:
     ```
     http://localhost:8000/docs
     ```

@@ -99,6 +99,28 @@ services:
     environment:
       MONGO_URI: "mongodb://mongodb:27017"
       KAFKA_BROKER: "kafka:29092"
+  
+  redis:
+    image: redis:7
+    container_name: redis_app
+    ports:
+      - "6379:6379"
+    restart: always
+    networks:
+      - app-network
+  
+  login:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.login_page
+    container_name: login_app
+    ports:
+      - "8502:8502"
+    restart: always
+    networks:
+      - app-network
+    depends_on:
+      - redis
 
 networks:
   app-network:
