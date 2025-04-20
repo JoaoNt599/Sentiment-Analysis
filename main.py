@@ -21,12 +21,6 @@ def start_streamlit():
 
 
 if __name__ == "__main__":
-    """
-    Ponto de entrada principal do script
-    Adiciona diretórios ao PYTHONPATH, inicia o Streamlit e executa o servidor Uvicorn.
-    Orquestrador para facilitar a subida da aplicação localmente/via terminal, para desenvolvimento e debug.
-    python main.py // da raiz dessa pasta
-    """
 
     # Adiciona o diretório raiz do projeto ao PYTHONPATH
     sys.path.append(os.getcwd())
@@ -34,7 +28,7 @@ if __name__ == "__main__":
 
     # Inicia o Streamlit
     start_streamlit()
-
+    
     # Executa o servidor Uvicorn para a aplicação FastAPI
     uvicorn.run("backend.fast_api:app", host="0.0.0.0", port=8000, reload=True)
 

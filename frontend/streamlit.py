@@ -8,7 +8,6 @@ from pymongo import MongoClient
 fastapi_host = os.getenv('FASTAPI_HOST', 'fastapi')
 
 # Conecta ao MongoDB
-
 mongo_client = MongoClient(os.getenv("MONGO_URI", "mongodb://mongodb:27017/"))
 db = mongo_client["local"]
 feedback_collection = db["feedback"]
@@ -26,10 +25,11 @@ def submit_comment(comment, rating):
         return
 
     status_color = "green" if feedback['status'] == 'aprovado' else "red"
+    
     st.write(f"**Você comentou:** {comment}")
     st.write(f"**Avaliação:** {rating} estrelas")
     st.write(f"**Feedback:** {feedback['descricao']}")
-    st.markdown(f"**Status:** **<span style='color:{status_color}'>{feedback['status']}</span>**", unsafe_allow_html=True)
+    st.markdown(f"**Status:** <span style='color:{status_color}'>{feedback['status']}</span>", unsafe_allow_html=True)
 
 
 def display_feedback():
@@ -37,8 +37,11 @@ def display_feedback():
     feedbacks = feedback_collection.find()
     
     for feedback in feedbacks:
+        st.write(f"**ID:** {feedback['_id']}")
         st.write(f"**Comentário:** {feedback['comment']}")
         st.write(f"**Avaliação:** {feedback['rating']} estrelas")
+        st.write(f"**Análise de sentimento:** {feedback.get('descricao')}")
+        st.write(f"**Status:** {feedback.get('status', 'Não disponível')}")
         st.write("---")
 
 

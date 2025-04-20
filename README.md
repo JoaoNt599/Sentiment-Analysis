@@ -89,6 +89,24 @@ Isso permitirá que a aplicação funcione sem a necessidade de uma chave da Ope
     http://localhost:8501
     ```
 
+### Execução Local com Dependências Isoladas
+
+Caso você já tenha subido as dependências com Docker Compose, pode listar os containers e iniciar aqueles que estiverem desativados manualmente:
+
+```sh
+docker ps -a  # Verifica containers desativados
+docker start <nome_do_container>
+```
+
+Se estiver utilizando a extensão do Docker no VS Code, é possível iniciar as dependências isoladas diretamente clicando no botão de "play".
+
+**Ordem de Inicialização Recomendada:**
+1. **Zookeeper** deve ser iniciado antes do Kafka.
+2. **Kafka** precisa estar rodando antes do Kowl.
+3. **O consumer** deve ser iniciado somente após o Kafka estar operacional.
+
+Isso garante que todos os serviços estejam disponíveis no momento correto, evitando falhas de conexão entre os componentes.
+
 ## Conteinerização com Docker
 
 Para conteinerizar a aplicação, siga os passos abaixo:

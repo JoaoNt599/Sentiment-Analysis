@@ -1,0 +1,187 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+      "title": "FastAPI",
+      "description": "API para envio e análise de feedbacks.",
+      "version": "0.1.0"
+    },
+    "paths": {
+      "/": {
+        "get": {
+          "summary": "Root",
+          "operationId": "root__get",
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {}
+                }
+              }
+            }
+          }
+        }
+      },
+      "/feedback/": {
+        "post": {
+          "summary": "Feedback",
+          "operationId": "feedback_feedback__post",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Evaluation"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {}
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/feedbacks/": {
+        "get": {
+          "summary": "Get Feedback",
+          "operationId": "get_feedback_feedbacks__get",
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "title": "Response Get Feedback Feedbacks  Get",
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/Feedback"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "schemas": {
+        "Evaluation": {
+          "title": "Evaluation",
+          "type": "object",
+          "required": ["comment", "rating"],
+          "properties": {
+            "comment": {
+              "title": "Comment",
+              "type": "string"
+            },
+            "rating": {
+              "title": "Rating",
+              "type": "integer"
+            }
+          }
+        },
+        "Feedback": {
+          "title": "Feedback",
+          "type": "object",
+          "required": ["id", "comment", "rating"],
+          "properties": {
+            "id": {
+              "title": "Id",
+              "type": "string"
+            },
+            "comment": {
+              "title": "Comment",
+              "type": "string"
+            },
+            "rating": {
+              "title": "Rating",
+              "type": "integer"
+            },
+            "descricao": {
+              "title": "Descricao",
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "status": {
+              "title": "Status",
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "HTTPValidationError": {
+          "title": "HTTPValidationError",
+          "type": "object",
+          "properties": {
+            "detail": {
+              "title": "Detail",
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/ValidationError"
+              }
+            }
+          }
+        },
+        "ValidationError": {
+          "title": "ValidationError",
+          "type": "object",
+          "required": ["loc", "msg", "type"],
+          "properties": {
+            "loc": {
+              "title": "Location",
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ]
+              }
+            },
+            "msg": {
+              "title": "Message",
+              "type": "string"
+            },
+            "type": {
+              "title": "Error Type",
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+  

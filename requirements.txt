@@ -11,6 +11,7 @@ certifi==2025.1.31
 charset-normalizer==3.4.1
 click==8.1.8
 colorama==0.4.6
+confluent-kafka==2.10.0
 dnspython==2.7.0
 dotenv==0.9.9
 fastapi==0.115.12
@@ -22,6 +23,7 @@ idna==3.10
 Jinja2==3.1.6
 jsonschema==4.23.0
 jsonschema-specifications==2024.10.1
+kafka-python==2.1.5
 MarkupSafe==3.0.2
 multidict==6.4.3
 narwhals==1.35.0
