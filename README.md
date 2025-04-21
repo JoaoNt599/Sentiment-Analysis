@@ -145,3 +145,9 @@ Para orquestrar a aplicação usando Docker Compose, siga os passos abaixo:
     ```
     http://localhost:8000/docs
     ```
+
+## Teste Redis:
+
+    KEYS *
+    GET session:admin
+    TTL session:admin
