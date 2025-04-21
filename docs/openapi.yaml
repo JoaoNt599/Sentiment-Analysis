@@ -2,18 +2,52 @@ openapi: 3.1.0
 info:
   title: FastAPI
   description: API para envio e análise de feedbacks.
-  version: "0.1.0"
+  version: 0.1.0
 paths:
   /:
     get:
       summary: Root
       operationId: root__get
       responses:
-        "200":
+        '200':
           description: Successful Response
           content:
             application/json:
               schema: {}
+  /login:
+    post:
+      summary: Login
+      operationId: login_login_post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginSchema'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /protegida/:
+    get:
+      summary: Rota Protegida
+      operationId: rota_protegida_protegida__get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+        - HTTPBearer: []
   /feedback/:
     post:
       summary: Feedback
@@ -23,25 +57,25 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Evaluation"
+              $ref: '#/components/schemas/Evaluation'
       responses:
-        "200":
+        '200':
           description: Successful Response
           content:
             application/json:
               schema: {}
-        "422":
+        '422':
           description: Validation Error
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/HTTPValidationError"
+                $ref: '#/components/schemas/HTTPValidationError'
   /feedbacks/:
     get:
       summary: Get Feedback
       operationId: get_feedback_feedbacks__get
       responses:
-        "200":
+        '200':
           description: Successful Response
           content:
             application/json:
@@ -49,7 +83,7 @@ paths:
                 title: Response Get Feedback Feedbacks  Get
                 type: array
                 items:
-                  $ref: "#/components/schemas/Feedback"
+                  $ref: '#/components/schemas/Feedback'
 components:
   schemas:
     Evaluation:
@@ -60,11 +94,11 @@ components:
         - rating
       properties:
         comment:
-          title: Comment
           type: string
+          title: Comment
         rating:
-          title: Rating
           type: integer
+          title: Rating
     Feedback:
       title: Feedback
       type: object
@@ -74,14 +108,14 @@ components:
         - rating
       properties:
         id:
+          type: string
           title: Id
-          type: string
         comment:
-          title: Comment
           type: string
+          title: Comment
         rating:
-          title: Rating
           type: integer
+          title: Rating
         descricao:
           title: Descricao
           anyOf:
@@ -100,7 +134,20 @@ components:
           title: Detail
           type: array
           items:
-            $ref: "#/components/schemas/ValidationError"
+            $ref: '#/components/schemas/ValidationError'
+    LoginSchema:
+      title: LoginSchema
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          title: Username
+        password:
+          type: string
+          title: Password
     ValidationError:
       title: ValidationError
       type: object
@@ -117,8 +164,12 @@ components:
               - type: string
               - type: integer
         msg:
+          type: string
           title: Message
-          type: string
         type:
-          title: Error Type
           type: string
+          title: Error Type
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

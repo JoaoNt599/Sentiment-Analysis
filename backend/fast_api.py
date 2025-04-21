@@ -6,7 +6,6 @@ from config import DATABASE_NAME
 from kafka_producer import KafkaFeedbackProducer
 from bson import ObjectId
 from typing import List, Dict, Optional
-# from backend.auth.auth import create_access_token, verify_token
 from auth.auth import create_access_token, verify_token
 import os
 

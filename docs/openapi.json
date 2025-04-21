@@ -22,6 +22,63 @@
           }
         }
       },
+      "/login": {
+        "post": {
+          "summary": "Login",
+          "operationId": "login_login_post",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginSchema"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {}
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/protegida/": {
+        "get": {
+          "summary": "Rota Protegida",
+          "operationId": "rota_protegida_protegida__get",
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {}
+                }
+              }
+            }
+          },
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ]
+        }
+      },
       "/feedback/": {
         "post": {
           "summary": "Feedback",
@@ -68,11 +125,11 @@
               "content": {
                 "application/json": {
                   "schema": {
-                    "title": "Response Get Feedback Feedbacks  Get",
-                    "type": "array",
                     "items": {
                       "$ref": "#/components/schemas/Feedback"
-                    }
+                    },
+                    "type": "array",
+                    "title": "Response Get Feedback Feedbacks  Get"
                   }
                 }
               }
@@ -84,39 +141,35 @@
     "components": {
       "schemas": {
         "Evaluation": {
-          "title": "Evaluation",
+          "properties": {
+            "comment": {
+              "type": "string",
+              "title": "Comment"
+            },
+            "rating": {
+              "type": "integer",
+              "title": "Rating"
+            }
+          },
           "type": "object",
           "required": ["comment", "rating"],
-          "properties": {
-            "comment": {
-              "title": "Comment",
-              "type": "string"
-            },
-            "rating": {
-              "title": "Rating",
-              "type": "integer"
-            }
-          }
+          "title": "Evaluation"
         },
         "Feedback": {
-          "title": "Feedback",
-          "type": "object",
-          "required": ["id", "comment", "rating"],
           "properties": {
             "id": {
-              "title": "Id",
-              "type": "string"
+              "type": "string",
+              "title": "Id"
             },
             "comment": {
-              "title": "Comment",
-              "type": "string"
+              "type": "string",
+              "title": "Comment"
             },
             "rating": {
-              "title": "Rating",
-              "type": "integer"
+              "type": "integer",
+              "title": "Rating"
             },
             "descricao": {
-              "title": "Descricao",
               "anyOf": [
                 {
                   "type": "string"
@@ -124,10 +177,10 @@
                 {
                   "type": "null"
                 }
-              ]
+              ],
+              "title": "Descricao"
             },
             "status": {
-              "title": "Status",
               "anyOf": [
                 {
                   "type": "string"
@@ -135,31 +188,45 @@
                 {
                   "type": "null"
                 }
-              ]
+              ],
+              "title": "Status"
             }
-          }
+          },
+          "type": "object",
+          "required": ["id", "comment", "rating"],
+          "title": "Feedback"
         },
         "HTTPValidationError": {
-          "title": "HTTPValidationError",
-          "type": "object",
           "properties": {
             "detail": {
-              "title": "Detail",
-              "type": "array",
               "items": {
                 "$ref": "#/components/schemas/ValidationError"
-              }
+              },
+              "type": "array",
+              "title": "Detail"
             }
-          }
+          },
+          "type": "object",
+          "title": "HTTPValidationError"
+        },
+        "LoginSchema": {
+          "properties": {
+            "username": {
+              "type": "string",
+              "title": "Username"
+            },
+            "password": {
+              "type": "string",
+              "title": "Password"
+            }
+          },
+          "type": "object",
+          "required": ["username", "password"],
+          "title": "LoginSchema"
         },
         "ValidationError": {
-          "title": "ValidationError",
-          "type": "object",
-          "required": ["loc", "msg", "type"],
           "properties": {
             "loc": {
-              "title": "Location",
-              "type": "array",
               "items": {
                 "anyOf": [
                   {
@@ -169,17 +236,28 @@
                     "type": "integer"
                   }
                 ]
-              }
+              },
+              "type": "array",
+              "title": "Location"
             },
             "msg": {
-              "title": "Message",
-              "type": "string"
+              "type": "string",
+              "title": "Message"
             },
             "type": {
-              "title": "Error Type",
-              "type": "string"
+              "type": "string",
+              "title": "Error Type"
             }
-          }
+          },
+          "type": "object",
+          "required": ["loc", "msg", "type"],
+          "title": "ValidationError"
+        }
+      },
+      "securitySchemes": {
+        "HTTPBearer": {
+          "type": "http",
+          "scheme": "bearer"
         }
       }
     }

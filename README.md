@@ -146,8 +146,25 @@ Para orquestrar a aplicação usando Docker Compose, siga os passos abaixo:
     http://localhost:8000/docs
     ```
 
-## Teste Redis:
+## Validando sessão no Redis
 
+1. Acesse o container do redis:
+    ```sh
+    docker exec -it redis_app sh
+    ```
+2. Dentro do container acesse o cli do Redis:
+    ```sh
+    redis-cli
+    ```
+3. Confirme se a chave foi gerada:
+    ```sh
     KEYS *
+    ```
+4. Confirme se a sessão foi iniciada:
+    ```sh
     GET session:admin
+    ```
+5. Confirme o tempo sessão:
+    ```sh
     TTL session:admin
+    ```

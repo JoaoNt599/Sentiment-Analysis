@@ -4,56 +4,93 @@ import os
 from pymongo import MongoClient
 
 
-# Obtém o nome do host do FastAPI a partir da variável de ambiente ou usa 'fastapi' por padrão
-fastapi_host = os.getenv('FASTAPI_HOST', 'fastapi')
+# Configs
+API_URL = "http://fastapi:8000"
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://mongodb:27017/")
 
-# Conecta ao MongoDB
-mongo_client = MongoClient(os.getenv("MONGO_URI", "mongodb://mongodb:27017/"))
+mongo_client = MongoClient(MONGO_URI)
 db = mongo_client["local"]
 feedback_collection = db["feedback"]
 
-
-def submit_comment(comment, rating):
-    response = requests.post(f"http://{fastapi_host}:8000/feedback/", json={"comment": comment, "rating": rating})
-    print("Status Code:", response.status_code)  # Exibe status
-    print("Response Content:", response.text)  # Exibe o conteúdo bruto da resposta
-    
-    try:
-        feedback = response.json()
-    except requests.exceptions.JSONDecodeError:
-        st.error("Erro ao processar resposta do servidor. Verifique se FastAPI está funcionando corretamente.")
-        return
-
-    status_color = "green" if feedback['status'] == 'aprovado' else "red"
-    
-    st.write(f"**Você comentou:** {comment}")
-    st.write(f"**Avaliação:** {rating} estrelas")
-    st.write(f"**Feedback:** {feedback['descricao']}")
-    st.markdown(f"**Status:** <span style='color:{status_color}'>{feedback['status']}</span>", unsafe_allow_html=True)
+# Inicializa o estado da sessão
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
+if "token" not in st.session_state:
+    st.session_state.token = None
 
 
-def display_feedback():
-    st.subheader("Feedbacks Salvos")
-    feedbacks = feedback_collection.find()
-    
-    for feedback in feedbacks:
-        st.write(f"**ID:** {feedback['_id']}")
-        st.write(f"**Comentário:** {feedback['comment']}")
-        st.write(f"**Avaliação:** {feedback['rating']} estrelas")
-        st.write(f"**Análise de sentimento:** {feedback.get('descricao')}")
-        st.write(f"**Status:** {feedback.get('status', 'Não disponível')}")
-        st.write("---")
+# Tela de login
+def login():
+    st.title("Login")
+
+    username = st.text_input("Usuário")
+    password = st.text_input("Senha", type="password")
+
+    if st.button("Entrar"):
+        response = requests.post(f"{API_URL}/login", json={"username": username, "password": password})
+
+        if response.status_code == 200:
+            data = response.json()
+            st.session_state.logged_in = True
+            st.session_state.username = username
+            st.session_state.token = data["access_token"]
+            st.success("Login realizado com sucesso!")
+            st.rerun()
+        else:
+            st.error("Usuário ou senha inválidos.")
 
 
-st.title("Input de Comentários - Análise de Sentimentos")
+# Tela principal protegida
+def app_principal():
+    st.title("Input de Comentários - Análise de Sentimentos")
 
-tab1, tab2 = st.tabs(["Enviar Comentário", "Ver Feedbacks"])
+    # Botão de logout
+    if st.button("Sair"):
+        st.session_state.clear()
+        st.success("Logout efetuado.")
+        st.rerun()
 
-with tab1:
-    comment = st.text_input("Escreva seu comentário aqui:")
-    rating = st.slider("Avaliação (1 a 5 estrelas):", 1, 5, 3)
-    if st.button("Enviar"):
-        submit_comment(comment, rating)
+    tab1, tab2 = st.tabs(["Enviar Comentário", "Ver Feedbacks"])
 
-with tab2:
-    display_feedback()
+    with tab1:
+        comment = st.text_input("Escreva seu comentário:")
+        rating = st.slider("Avaliação (1 a 5 estrelas):", 1, 5, 3)
+
+        if st.button("Enviar Comentário"):
+            headers = {"Authorization": f"Bearer {st.session_state.token}"}
+            response = requests.post(
+                f"{API_URL}/feedback/",
+                json={"comment": comment, "rating": rating},
+                headers=headers
+            )
+
+            if response.status_code == 200:
+                feedback = response.json()
+                st.write(f"**Você comentou:** {comment}")
+                st.write(f"**Avaliação:** {rating} estrelas")
+                st.write(f"**Feedback:** {feedback['descricao']}")
+                status_color = "green" if feedback['status'] == "aprovado" else "red"
+                st.markdown(f"**Status:** <span style='color:{status_color}'>{feedback['status']}</span>", unsafe_allow_html=True)
+            else:
+                st.error("Erro ao enviar comentário.")
+
+    with tab2:
+        st.subheader("Feedbacks Salvos")
+        for fb in feedback_collection.find():
+            st.write(f"**Comentário:** {fb['comment']}")
+            st.write(f"**Avaliação:** {fb['rating']} estrelas")
+            st.write(f"**Sentimento:** {fb.get('descricao')}")
+            st.write(f"**Status:** {fb.get('status', 'Não disponível')}")
+            st.write("---")
+
+
+# Roteador principal
+def main():
+    if st.session_state.logged_in:
+        app_principal()
+    else:
+        login()
+
+
+if __name__ == "__main__":
+    main()
