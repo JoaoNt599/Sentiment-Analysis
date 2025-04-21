@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Depends
 from pydantic import BaseModel, conint
 from api_client import get_feedback_from_openai
 from mongodb import MongoDBConnection
@@ -6,8 +6,15 @@ from config import DATABASE_NAME
 from kafka_producer import KafkaFeedbackProducer
 from bson import ObjectId
 from typing import List, Dict, Optional
+# from backend.auth.auth import create_access_token, verify_token
+from auth.auth import create_access_token, verify_token
 import os
 
+
+
+
+MOCK_USER = "admin"
+MOCK_PASSWORD = "1234"
 
 MONGO_URI = os.environ.get('MONGO_URI', 'mongodb://mongo:27017/')
 
@@ -34,6 +41,11 @@ class Feedback(BaseModel):
     status: Optional[str] = None
 
 
+class LoginSchema(BaseModel):
+    username: str
+    password: str
+
+
 mongo_conn = MongoDBConnection(MONGO_URI, DATABASE_NAME)
 db = mongo_conn.get_database()
 
@@ -42,6 +54,18 @@ db = mongo_conn.get_database()
 def root():
     return {"message": "Backend rodando."}
 
+
+@app.post("/login")
+def login(data: LoginSchema):
+    if data.username == MOCK_USER and data.password == MOCK_PASSWORD:
+        token = create_access_token({"sub": data.username})
+        return {"access_token": token}
+    raise HTTPException(status_code=401, detail="Usuário ou senha inválidos")
+
+
+@app.get("/protegida/")
+def rota_protegida(username: str = Depends(verify_token)):
+    return {"message": f"Olá, {username}. Você está autenticado."}
 
 @app.post("/feedback/")
 async def feedback(evaluation: Evaluation):

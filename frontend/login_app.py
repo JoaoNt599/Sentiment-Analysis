@@ -1,16 +1,8 @@
 import streamlit as st 
-import redis
+import requests
 
 
-# Configuração do Redis
-r = redis.Redis(host='redis', port=6379, decode_responses=True)
-
-# Mock de usuário e senha
-MOCK_USER = "admin"
-MOCK_PASSWORD = "1234"
-
-# Tempo da sessão
-SESSION_TTL = 1800 # 30 minutos
+API_URL = "http://fastapi:8000"
 
 
 def login():
@@ -20,19 +12,23 @@ def login():
     password = st.text_input("Senha", type="password")
 
     if st.button("Entrar"):
-        if username == MOCK_USER and password == MOCK_PASSWORD:
-            session_key = f"session:{username}"
-            created = r.setex(session_key, SESSION_TTL, "active")
+        # Envia para rota /login da API
+        response = requests.post(
+            f"{API_URL}/login",
+            json={"username": username, "password": password}
+        )
 
-            if created:
-                st.success("Login bem-sucedido")
-            else:
-                st.error("Falha ao criar sessão no Redis.")
+        if response.status_code == 200:
+            access_token = response.json().get("access_token")
 
-            # r.setex(session_key, SESSION_TTL, "active")
-            # st.success("Login bem-sucedido")
+            # Salva o token no estado da sessão
+            st.session_state["logged_in"] = True
+            st.session_state["username"] = username
+            st.session_state["token"] = access_token
 
-            # Redireciona após login
+            st.success("Login bem-sucedido")
+
+            # Redireciona após login (opcional)
             st.markdown(
                 """
                 <meta http-equiv="refresh" content="1; url=http://localhost:8501/" />
@@ -40,11 +36,16 @@ def login():
                 unsafe_allow_html=True,
             )
         else:
-            st.error("Usuário ou senha inválidos.")
-        
+            st.error("Usuário ou senha inválidos")
+
 
 def main():
-    login()
+    # Se já está logado
+    if st.session_state.get("logged_in"):
+        st.success(f"Você está logado como {st.session_state.get('username')}")
+        st.write("Token JWT:", st.session_state.get("token"))
+    else:
+        login()
 
 
 if __name__ == "__main__":
