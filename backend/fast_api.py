@@ -7,9 +7,8 @@ from kafka_producer import KafkaFeedbackProducer
 from bson import ObjectId
 from typing import List, Dict, Optional
 from auth.auth import create_access_token, verify_token
+from validators.decorators import validate_comment_body
 import os
-
-
 
 
 MOCK_USER = "admin"
@@ -66,10 +65,17 @@ def login(data: LoginSchema):
 def rota_protegida(username: str = Depends(verify_token)):
     return {"message": f"Olá, {username}. Você está autenticado."}
 
+
 @app.post("/feedback/")
-async def feedback(evaluation: Evaluation):
+async def feedback(
+    evaluation: Evaluation,
+    _: dict = Depends(validate_comment_body)
+):
     producer.produce_feedback(evaluation.dict())
-    return {"status": "Enviado para o tópico kafka", "descricao": "Aguardando processamento"}
+    return {
+        "status": "Enviado para o tópico kafka", 
+        "descricao": "Aguardando processamento"
+    }
 
 
 @app.get("/feedbacks/", response_model=List[Feedback])

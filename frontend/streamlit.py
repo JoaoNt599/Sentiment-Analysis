@@ -72,11 +72,16 @@ def app_principal():
                 status_color = "green" if feedback['status'] == "aprovado" else "red"
                 st.markdown(f"**Status:** <span style='color:{status_color}'>{feedback['status']}</span>", unsafe_allow_html=True)
             else:
-                st.error("Erro ao enviar comentário.")
+                try:
+                    error = response.json()
+                    st.error(f"Erro ao enviar comentário: {error.get('detail')}")
+                except Exception:
+                    st.error("Erro ao enviar comentário.")
 
     with tab2:
         st.subheader("Feedbacks Salvos")
         for fb in feedback_collection.find():
+            st.write(f"**ID:** {fb.get('_id')}")
             st.write(f"**Comentário:** {fb['comment']}")
             st.write(f"**Avaliação:** {fb['rating']} estrelas")
             st.write(f"**Sentimento:** {fb.get('descricao')}")
